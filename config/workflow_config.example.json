@@ -1,0 +1,117 @@
+{
+  "_comment": "复制到 skills/ima-skill/harness/workflow_config.json 后再填写本机路径、IMA 知识库 ID 和笔记 ID。目标文件已被 .gitignore 忽略。",
+  "global_ima_skill_dir": "vendor/ima-skill",
+  "default_knowledge_base": "YOUR_DEFAULT_KB_NAME",
+  "paths": {
+    "intake_dir": "D:/Literature/Inbox",
+    "recommended_archive_dir": "D:/Literature/Recommended",
+    "self_collected_archive_dir": "D:/Literature/SelfCollected",
+    "state_dir": ".workflow-state",
+    "log_dir": ".workflow-state/logs"
+  },
+  "ima_note_index": {
+    "note_name": "0-文章索引",
+    "note_id": "REPLACE_WITH_IMA_NOTE_ID",
+    "append_format": "{archive_no}、论文名称：{title}\n年份：{year}\n标签：{tags}\n文章类型：{paper_type}\n文章主要内容：{summary}",
+    "verify_after_append": true
+  },
+  "archive_numbering": {
+    "archive_dir": "D:/Literature/SelfCollected",
+    "naming_pattern": "{archive_no}-{title}.pdf",
+    "start_number": 1,
+    "rule": "max_plus_one"
+  },
+  "knowledge_base_routing": {
+    "recommended": {
+      "target_kb": "YOUR_RECOMMENDED_KB_NAME",
+      "rule": "推荐文献统一进入该知识库。"
+    },
+    "self_collected": {
+      "rule": "自行查找文献按文章内容路由。",
+      "routing": {
+        "YOUR_DEFAULT_KB_NAME": "默认领域或主要研究方向文献。",
+        "YOUR_METHOD_KB_NAME": "机器学习、代理模型、优化或其他方法类文献。",
+        "YOUR_MISC_KB_NAME": "其他主题文献。"
+      }
+    }
+  },
+  "knowledge_base_mapping": {
+    "YOUR_DEFAULT_KB_NAME": "REPLACE_WITH_KB_ID",
+    "YOUR_RECOMMENDED_KB_NAME": "REPLACE_WITH_KB_ID",
+    "YOUR_METHOD_KB_NAME": "REPLACE_WITH_KB_ID",
+    "YOUR_MISC_KB_NAME": "REPLACE_WITH_KB_ID"
+  },
+  "upload_constraints": {
+    "max_file_size_mb": 200,
+    "allowed_extensions": ["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "csv", "md", "markdown", "txt", "png", "jpg", "jpeg", "webp"],
+    "naming_rule": "title_must_equal_file_name",
+    "reject_video": true,
+    "reject_unsupported": true
+  },
+  "dedup_strategy": {
+    "method": "check_repeated_names",
+    "on_duplicate": "append_timestamp",
+    "timestamp_format": "_YYYYMMDDHHmmss"
+  },
+  "retry_policy": {
+    "max_retries": 3,
+    "retry_delay_ms": 5000,
+    "cos_upload_timeout_ms": 300000
+  },
+  "safety_gates": {
+    "gate1_type_check": true,
+    "gate2_naming": true,
+    "gate3_duplicates": true,
+    "gate4_cos_upload_exit": true,
+    "gate5_add_knowledge_verify": true
+  },
+  "workflow_gates": {
+    "content_check": {
+      "enabled": true,
+      "script": "skills/literature-organizer/harness/content_check.cjs",
+      "step": 4,
+      "on_fail": "block_and_regenerate"
+    },
+    "dedup_guard": {
+      "enabled": true,
+      "script": "skills/literature-organizer/harness/dedup_guard.cjs",
+      "step": 5,
+      "on_blocking_fail": "skip_entire_workflow"
+    },
+    "archive_numbering": {
+      "enabled": true,
+      "script": "skills/literature-organizer/harness/next_archive_no.cjs",
+      "step": 6,
+      "on_fail": "block"
+    },
+    "zotero_guard": {
+      "enabled": true,
+      "script": "skills/literature-organizer/harness/zotero_guard.cjs",
+      "step": 9,
+      "on_fail": "block_and_fix"
+    }
+  },
+  "verification": {
+    "enabled": true,
+    "required_before_complete": true,
+    "tag_rules": {
+      "min_count": 3,
+      "max_count": 8,
+      "must_be_from_content": true,
+      "reject_title_only_words": true,
+      "reject_garbled": true
+    },
+    "abstract_rules": {
+      "min_length": 50,
+      "max_length": 500,
+      "must_be_from_content": true,
+      "reject_title_rewrite": true,
+      "reject_garbled": true
+    }
+  },
+  "logging": {
+    "log_dir": ".workflow-state/logs",
+    "log_level": "info",
+    "log_format": "json"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "title": "示例论文标题",
+  "year": "2026",
+  "authors": ["第一作者", "第二作者"],
+  "doi": "10.0000/example",
+  "publication_title": "示例期刊",
+  "source_type": "self-collected",
+  "source_path": "D:/Literature/Inbox/example.pdf",
+  "archive_path": "D:/Literature/SelfCollected/1-示例论文标题.pdf",
+  "archive_no": 1,
+  "sha256": "64_hex_characters",
+  "tags": ["标签一", "标签二", "标签三"],
+  "summary": "这里填写基于论文实际内容撰写的中文摘要。",
+  "ima": {
+    "kb_name": "YOUR_DEFAULT_KB_NAME",
+    "kb_id": "REPLACE_WITH_KB_ID",
+    "media_id": "MEDIA_ID_AFTER_UPLOAD",
+    "note_id": "IMA_NOTE_ID",
+    "status": "uploaded"
+  },
+  "zotero": {
+    "item_key": "ITEMKEY",
+    "status": "created"
+  },
+  "errors": []
+}
