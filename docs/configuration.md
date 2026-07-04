@@ -101,6 +101,38 @@ IMA-Status: uploaded|pending|failed
 Managed-By: literature-workflow
 ```
 
+### 2.4.1 备选接口：BibTeX / JabRef 兼容配置
+
+如果用户不用本仓库默认的 Zotero 主方案，而是使用 JabRef、LaTeX、Overleaf 或 Pandoc，可以选择 `extra/reference-managers/jabref/` 中的 BibTeX / JabRef 兼容备选接口。该接口不连接 JabRef 桌面端，AI 只维护 `.bib` / `.biblatex` 文件和 PDF 附件路径。
+
+| 需要用户提供 | 配置项 | 说明 |
+| --- | --- | --- |
+| BibTeX 文件路径 | `reference_backend.bib_file` | 默认建议 `<literature_root>/references/references.bib` |
+| PDF 归档目录 | `reference_backend.pdf_root` | 默认建议 `<literature_root>/papers` |
+| citation key 规则 | `reference_backend.citation_key.pattern` | 默认 `author_year_shorttitle` |
+| 是否写入 file 字段 | `reference_backend.write_file_field` | 默认 `true`，便于 JabRef 打开 PDF |
+| 是否写入前备份 | `reference_backend.safety.create_backup_before_write` | 默认 `true` |
+
+备选接口模板：
+
+- `extra/reference-managers/jabref/bibtex-backend.example.json`
+
+完整规范：
+
+- `extra/reference-managers/jabref/bibtex-jabref-standard.md`
+
+推荐默认目录：
+
+```text
+<literature_root>/
+  papers/
+  references/
+    references.bib
+    backups/
+```
+
+AI 应直接更新 `.bib` 文件，不要求用户安装或启动 JabRef。用户如使用 JabRef，可在流程完成后用 JabRef 打开 `references.bib` 进行人工检查。该配置只应作为 `extra/` 扩展方案使用，不写入主 `config/` 目录。
+
 ### 2.5 AI 工具类型
 
 用户需要说明自己准备用哪个 AI 工具执行流程：

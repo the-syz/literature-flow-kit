@@ -1,0 +1,14 @@
+{
+  "_comment": "JabRef 用户可直接使用本模板。AI 只维护 BibTeX/BibLaTeX 文件，JabRef 作为可选人工查看和校验工具。",
+  "reference_backend": {
+    "type": "bibtex",
+    "manager": "optional_jabref",
+    "bib_file": "<literature_root>/references/references.bib",
+    "pdf_root": "<literature_root>/papers",
+    "citation_key_pattern": "author_year_shorttitle",
+    "write_file_field": true,
+    "dedupe_keys": ["doi", "sha256", "normalized_title_year"],
+    "backup_before_write": true,
+    "dry_run_first": true
+  }
+}

@@ -25,6 +25,10 @@ config/
   trae-mcp.example.json
   workbuddy-mcp.example.json
   codex-automation.example.toml
+extra/
+  README.md               # 不使用 IMA / Zotero 主方案时的扩展连接候选
+  reference-managers/
+    jabref/               # BibTeX / JabRef 兼容备选接口
 automation/
   README.md               # 自动化模板说明
   prompts/                # 自动化 prompt 示例
@@ -74,6 +78,8 @@ node skills/ima-skill/harness/preflight.cjs
 | Codex | `docs/codex-skill-automation-setup.md` | 安装 Codex-owned skills、固定 runner、自动化任务 |
 | TRAE Work | `docs/trae-work-setup.md` | 项目级 skills、Zotero MCP、TRAE 自动化 |
 | WorkBuddy | `docs/workbuddy-setup.md` | 用户级 skills、自定义 MCP、连接器信任、自动化 prompt |
+
+`extra/` 中的内容不是主流程必需配置，而是用户不使用 IMA / Zotero 主方案时的备选接口。例如使用 JabRef、LaTeX / Overleaf / Pandoc 引用库时，可走 `extra/reference-managers/jabref/` 的 BibTeX / JabRef 兼容模式：AI 直接维护 `.bib` 文件和 PDF 路径，不连接 JabRef 桌面端。
 
 公开文档只使用 `<repo>`、`<literature_root>`、`<logs_dir>` 等占位符。真实路径、API key、知识库 ID、笔记 ID 只写入本机私有配置。
 

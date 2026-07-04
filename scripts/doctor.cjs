@@ -77,6 +77,10 @@ for (const rel of [
   'automation/README.md',
   'automation/prompts/literature-organizer.prompt.example.md',
   'automation/runners/run-literature-organizer.example.cjs',
+  'extra/README.md',
+  'extra/reference-managers/jabref/README.md',
+  'extra/reference-managers/jabref/bibtex-jabref-standard.md',
+  'extra/reference-managers/jabref/bibtex-backend.example.json',
   'vendor/ima-skill/ima_api.cjs',
   'integrations/zotero-mcp/mcp/zotero_mcp_server.py',
   'integrations/zotero-mcp/scripts/zotero.py',
@@ -111,6 +115,15 @@ try {
   note('模板仍包含占位符', hasPlaceholder(template), '这是预期状态；复制为本机配置后再替换。');
 } catch (err) {
   check('读取workflow_config模板', false, err.message);
+}
+
+try {
+  const bibtexTemplate = readJson('extra/reference-managers/jabref/bibtex-backend.example.json');
+  check('BibTeX模板包含reference_backend', Boolean(bibtexTemplate.reference_backend));
+  check('BibTeX模板类型为bibtex', bibtexTemplate.reference_backend && bibtexTemplate.reference_backend.type === 'bibtex');
+  check('BibTeX模板位于extra扩展目录', exists('extra/reference-managers/jabref/bibtex-backend.example.json'));
+} catch (err) {
+  check('读取BibTeX后端模板', false, err.message);
 }
 
 if (exists('skills/ima-skill/harness/workflow_config.json')) {
