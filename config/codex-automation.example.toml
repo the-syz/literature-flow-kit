@@ -1,0 +1,22 @@
+version = 1
+id = "literature-organizer-daily"
+kind = "cron"
+name = "每日文献整理（示例）"
+status = "PAUSED"
+rrule = "DTSTART;TZID=Asia/Shanghai:20260704T040000\nRRULE:FREQ=DAILY;BYHOUR=4;BYMINUTE=0;BYSECOND=0"
+execution_environment = "local"
+cwds = ["<literature_root>"]
+
+prompt = """
+请读取 <repo>/AGENTS.md 和 <repo>/automation/prompts/literature-organizer.prompt.example.md。
+
+本任务必须调用固定 runner，而不是临场重写流程：
+node "<literature_root>/automation/runners/run-literature-organizer.cjs"
+
+运行前确认：
+- <repo>/config/env.example 已被复制到本机私有环境变量或私有 .env。
+- <repo>/config/workflow_config.example.json 已被复制并填写为本机私有 workflow_config.json。
+- Zotero Desktop 已启动，IMA 和 Zotero 凭证已在本机私有环境中设置。
+
+运行结束后报告处理数量、跳过原因、IMA 状态、Zotero 状态和日志路径。
+"""

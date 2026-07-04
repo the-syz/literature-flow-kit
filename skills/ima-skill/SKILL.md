@@ -10,11 +10,11 @@ description: 当文献整理流程需要 IMA OpenAPI 操作时使用：凭证预
 ## 配置
 
 1. 将 `config/workflow_config.example.json` 复制为 `skills/ima-skill/harness/workflow_config.json`。
-2. 填写本机临时存放区、归档目录、IMA 知识库 ID、文章索引笔记 ID 和日志目录。
+2. 填写本机临时存放区、归档目录和日志目录；用户只提供 IMA 知识库名称和文章索引笔记名称，AI 通过 IMA 查询解析对应 ID 后写入配置。
 3. 通过环境变量或本机配置文件提供凭证：
    - `IMA_OPENAPI_CLIENTID`
    - `IMA_OPENAPI_APIKEY`
-4. 不要提交真实凭证、真实日志、个人知识库导出或本机私有配置。
+4. 不要打印或复述完整凭证。
 
 ## IMA helper
 
@@ -45,11 +45,11 @@ node skills/ima-skill/harness/verify_workflow.cjs --file "path/to/paper.pdf" --z
 使用 `workflow_config.json` 的 `ima_note_index` 定义：
 
 - 笔记名称；
-- 笔记 ID；
+- 由 AI 根据笔记名称解析出的笔记 ID；
 - 追加格式；
 - 是否追加后核验。
 
-如果笔记 ID 缺失或仍是占位符，不要追加；先要求用户补齐配置。
+如果笔记 ID 缺失或仍是占位符，不要追加；先根据用户提供的笔记名称查询并补齐配置。
 
 ## 失败处理
 

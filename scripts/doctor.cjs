@@ -18,6 +18,17 @@ function readJson(rel) {
   return JSON.parse(readText(rel));
 }
 
+function validateTomlExample(rel) {
+  const text = readText(rel);
+  return [
+    /^version\s*=\s*1/m,
+    /^kind\s*=\s*"cron"/m,
+    /^status\s*=\s*"PAUSED"/m,
+    /<literature_root>/,
+    /prompt\s*=\s*"""/,
+  ].every((pattern) => pattern.test(text));
+}
+
 function hasPlaceholder(value) {
   if (typeof value === 'string') {
     return /REPLACE_|YOUR_|replace_with_|<repo>|C:\/path\/to/i.test(value);
@@ -41,8 +52,12 @@ function note(name, passed, detail = '') {
 for (const rel of [
   'README.md',
   'AGENTS.md',
+  'docs/configuration.md',
   'docs/setup.md',
   'docs/workflow.md',
+  'docs/codex-skill-automation-setup.md',
+  'docs/trae-work-setup.md',
+  'docs/workbuddy-setup.md',
   'skills/literature-organizer/SKILL.md',
   'skills/literature-organizer/harness/content_check.cjs',
   'skills/literature-organizer/harness/dedup_guard.cjs',
@@ -57,8 +72,14 @@ for (const rel of [
   'config/env.example',
   'config/workflow_config.example.json',
   'config/trae-mcp.example.json',
+  'config/workbuddy-mcp.example.json',
+  'config/codex-automation.example.toml',
+  'automation/README.md',
+  'automation/prompts/literature-organizer.prompt.example.md',
+  'automation/runners/run-literature-organizer.example.cjs',
   'vendor/ima-skill/ima_api.cjs',
   'integrations/zotero-mcp/mcp/zotero_mcp_server.py',
+  'integrations/zotero-mcp/scripts/zotero.py',
 ]) {
   check(`存在:${rel}`, exists(rel), rel);
 }
@@ -66,6 +87,7 @@ for (const rel of [
 for (const rel of [
   'config/workflow_config.example.json',
   'config/trae-mcp.example.json',
+  'config/workbuddy-mcp.example.json',
   'examples/paper_record.example.json',
 ]) {
   try {
@@ -74,6 +96,12 @@ for (const rel of [
   } catch (err) {
     check(`JSON合法:${rel}`, false, err.message);
   }
+}
+
+try {
+  check('TOML模板基础结构:config/codex-automation.example.toml', validateTomlExample('config/codex-automation.example.toml'));
+} catch (err) {
+  check('TOML模板基础结构:config/codex-automation.example.toml', false, err.message);
 }
 
 try {

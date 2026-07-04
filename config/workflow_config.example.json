@@ -3,9 +3,9 @@
   "global_ima_skill_dir": "vendor/ima-skill",
   "default_knowledge_base": "YOUR_DEFAULT_KB_NAME",
   "paths": {
-    "intake_dir": "D:/Literature/Inbox",
-    "recommended_archive_dir": "D:/Literature/Recommended",
-    "self_collected_archive_dir": "D:/Literature/SelfCollected",
+    "intake_dir": "<intake_dir>",
+    "recommended_archive_dir": "<recommended_archive_dir>",
+    "self_collected_archive_dir": "<self_collected_archive_dir>",
     "state_dir": ".workflow-state",
     "log_dir": ".workflow-state/logs"
   },
@@ -16,7 +16,7 @@
     "verify_after_append": true
   },
   "archive_numbering": {
-    "archive_dir": "D:/Literature/SelfCollected",
+    "archive_dir": "<self_collected_archive_dir>",
     "naming_pattern": "{archive_no}-{title}.pdf",
     "start_number": 1,
     "rule": "max_plus_one"

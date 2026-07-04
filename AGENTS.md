@@ -6,8 +6,9 @@
 
 1. `README.md`
 2. `skills/literature-organizer/SKILL.md`
-3. `docs/setup.md`
-4. `config/workflow_config.example.json`
+3. `docs/configuration.md`
+4. `docs/setup.md`
+5. `config/workflow_config.example.json`
 
 ## 配置前置约定
 
@@ -15,12 +16,12 @@
 
 - 临时存放区路径；
 - 推荐文献和自行查找文献的本地归档目录；
-- IMA 知识库名称和 ID；
-- IMA 文章索引笔记 ID；
+- IMA 知识库名称；
+- IMA 文章索引笔记名称；
 - Zotero 用户 ID 和 API key；
 - 如需本地 Zotero 辅助脚本，确认脚本路径。
 
-不得提交、打印或复述完整凭证。
+不得打印或复述完整凭证。AI 代理应通过 IMA 查询能力解析知识库 ID 和笔记 ID，并写入本机私有配置。
 
 ## 本地检查顺序
 

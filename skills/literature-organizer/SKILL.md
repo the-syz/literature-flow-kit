@@ -12,7 +12,7 @@ description: 当用户要求整理文献、处理 PDF、归档论文、更新文
 开始真实写入前必须确认：
 
 - `config/workflow_config.example.json` 已复制为 `skills/ima-skill/harness/workflow_config.json`；
-- `workflow_config.json` 中的临时存放区、归档目录、IMA 知识库 ID、IMA 笔记 ID 已替换；
+- `workflow_config.json` 中的临时存放区、归档目录已替换；用户提供的 IMA 知识库名称和笔记名称已由 AI 解析为 ID 并写入配置；
 - IMA 凭证已通过 `IMA_OPENAPI_CLIENTID`、`IMA_OPENAPI_APIKEY` 或本机配置文件提供；
 - Zotero 凭证已通过 `ZOTERO_API_KEY`、`ZOTERO_USER_ID` 提供；
 - Zotero MCP 已按 `config/trae-mcp.example.json` 配置。
@@ -29,7 +29,7 @@ description: 当用户要求整理文献、处理 PDF、归档论文、更新文
 6. **生成归档编号**：执行 `skills/literature-organizer/harness/next_archive_no.cjs`，按归档目录最大编号加一。禁止 AI 手填编号。
 7. **本地归档**：将文件重命名为 `archive_numbering.naming_pattern` 指定格式，移动到目标归档目录，并计算 SHA256。
 8. **上传 IMA**：执行 `skills/ima-skill/harness/upload_pdf.cjs`，上传到目标知识库。
-9. **追加文章索引笔记**：按 `ima_note_index.append_format` 追加到 IMA 文章索引笔记；缺少笔记 ID 时跳过并记录 pending。
+9. **追加文章索引笔记**：按 `ima_note_index.append_format` 追加到 IMA 文章索引笔记；缺少笔记 ID 时，先根据 `ima_note_index.note_name` 查询解析，仍失败则跳过并记录 pending。
 10. **运行 Zotero 写入预检**：执行 `skills/literature-organizer/harness/zotero_guard.cjs`，检查 title、tags、extra。
 11. **写入 Zotero index-only 条目**：通过 Zotero MCP 创建或更新条目，不附加 PDF。
 12. **末尾校验**：执行 `skills/ima-skill/harness/verify_workflow.cjs`，确认本地归档、IMA、IMA 笔记索引和 Zotero 一致。
@@ -65,7 +65,7 @@ description: 当用户要求整理文献、处理 PDF、归档论文、更新文
   - `skipped-duplicate`
   - `failed-cos`
   - `failed-add`
-- 文章索引笔记由 `ima_note_index` 配置。笔记 ID 仍是占位符时，不得追加。
+- 文章索引笔记由 `ima_note_index` 配置。笔记 ID 仍是占位符时，先根据笔记名称查询解析；仍无法解析时不得追加。
 
 ## Zotero 规则
 
@@ -177,7 +177,6 @@ node skills/ima-skill/harness/verify_workflow.cjs `
 
 ## 执行边界
 
-- 不提交 `.env`、PDF、日志、`skills/ima-skill/harness/workflow_config.json` 或个人导出数据。
 - 不把凭证写入文档、日志或 Zotero extra。
 - 不因 Zotero 缺失而触发 IMA 上传。
 - 不因 IMA 上传失败而破坏本地归档。
