@@ -16,6 +16,9 @@ build/
 *.log
 *.tmp
 *.bak
+*.drawio
+*.drawio.bkp
+.$*.drawio.bkp
 *.pdf
 references.bib
 workspace/

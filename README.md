@@ -1,105 +1,221 @@
-# IMA、Zotero 与本地归档的文献整理流程
+# literature-flow-kit
 
-这个仓库用于公开分享一套可交给 AI 执行的文献整理流程。目标是让 Codex、TraeSolo 等代理拿到仓库路径后，先读取主流程 skill，再根据本机环境补齐配置，最后把临时存放区中的论文整理到：
+一个面向 AI 代理的文献整理流程工具包，用来打通“临时存放区 -> 本地归档 -> AI 知识库 -> 引用库”的完整链路。
 
-- 本地归档文件夹；
-- IMA 知识库和文章索引笔记；
-- Zotero 的 index-only 索引条目。
+![literature-flow-kit 架构图](docs/literature-flow-architecture.svg)
 
-主流程入口是 `skills/literature-organizer/SKILL.md`。其他目录是 IMA、Zotero、MCP、harness 和配置模板。
+## 这个仓库解决什么问题
+
+在实际文献整理中，PDF、网页、笔记、引用条目和知识库往往分散在不同工具里。`literature-flow-kit` 的定位不是替代某一个文献软件，而是作为 AI 代理可以直接读取和执行的流程中枢：
+
+- 让 Codex、TraeSolo、WorkBuddy 等 AI 代理知道应该先读哪些说明、确认哪些配置、执行哪些检查。
+- 把临时存放区中的论文整理到本地归档目录，并保留可追溯的文章记录。
+- 默认连接 IMA 知识库，用于上传文件、建立文章索引笔记和沉淀知识库内容。
+- 默认连接 Zotero，用于维护文献引用库中的 index-only 条目。
+- 在 `extra/` 中保留 NotebookLM、Notion、Obsidian、BibTeX / JabRef、EndNote 等扩展接口说明，方便用户不用默认方案时替换组件。
+
+## 核心流程
+
+```text
+临时存放区
+  -> AI 代理读取主流程 skill
+  -> 内容检查、查重、编号、归档
+  -> 本地归档文件夹
+  -> AI 知识库（默认 IMA，可扩展 NotebookLM / Notion / Obsidian）
+  -> 引用库（默认 Zotero，可扩展 BibTeX / JabRef / EndNote）
+```
+
+主流程入口是：
+
+```text
+skills/literature-organizer/SKILL.md
+```
+
+`skills/ima-skill/` 和 `skills/zotero/` 是默认配套组件，负责 IMA 和 Zotero 的具体操作约束。不要绕过主流程直接改动归档、知识库或引用库。
 
 ## 目录结构
 
 ```text
 skills/
-  literature-organizer/   # 主流程 skill，负责编排从临时区到归档、IMA、Zotero 的全流程
-  ima-skill/              # 项目级 IMA 组件，包含上传、查重、校验 harness
-  zotero/                 # 项目级 Zotero 组件，负责 index-only 索引规则
+  literature-organizer/   # 主流程 skill，编排临时区、本地归档、IMA、Zotero
+  ima-skill/              # IMA 配套组件与 harness
+  zotero/                 # Zotero index-only 同步规则
+
 integrations/
   zotero-mcp/             # Zotero MCP 服务和离线 smoke test
+
 vendor/
   ima-skill/              # 随仓库携带的 IMA OpenAPI helper
+
 config/
-  env.example             # 环境变量模板，不包含真实密钥
+  env.example             # 环境变量示例
   workflow_config.example.json
   trae-mcp.example.json
   workbuddy-mcp.example.json
   codex-automation.example.toml
-extra/
-  README.md               # 不使用 IMA / Zotero 主方案时的扩展连接候选
-  reference-managers/
-    jabref/               # BibTeX / JabRef 兼容备选接口
+
 automation/
-  README.md               # 自动化模板说明
+  README.md               # 自动化 runner、prompt、配置模板说明
   prompts/                # 自动化 prompt 示例
   runners/                # 固定 runner 示例
+
 docs/
-  configuration.md        # 总体环境变量、API 和本地路径配置清单
-  setup.md                # 安装和本地配置说明
-  workflow.md             # 流程说明和 harness 约束
+  configuration.md        # 用户需要提供哪些配置
+  setup.md                # 本地安装和配置说明
+  workflow.md             # 主流程和 harness 约束
   codex-skill-automation-setup.md
-                           # 配置到 Codex（skills + 固定 runner + 自动化）
-  trae-work-setup.md      # 配置到 TRAE Work（Skills + MCP + 自动化）
-  workbuddy-setup.md      # 配置到 WorkBuddy（Skills + MCP + 自动化）
+  trae-work-setup.md
+  workbuddy-setup.md
+  literature-flow-architecture.svg
+
+extra/
+  README.md               # 不使用默认 IMA / Zotero 时的扩展连接方案
+  ai-knowledge-bases/     # NotebookLM / Notion / Obsidian 等
+  reference-managers/     # BibTeX / JabRef / EndNote 等
+
 examples/
   paper_record.example.json
+
 scripts/
   doctor.cjs              # 离线仓库体检脚本
 ```
 
-## 交给 AI 的最短使用方式
+## 交给 AI 代理时如何使用
 
-1. 先读 `AGENTS.md` 和 `skills/literature-organizer/SKILL.md`。
-2. 对照 `docs/configuration.md` 准备 API 凭证、本地文件夹路径和 AI 工具配置入口。
-3. 从 `config/env.example` 准备本机私有 `.env` 或 shell 环境变量，不要在对话、日志或公开说明中打印完整凭证。
-4. 复制 `config/workflow_config.example.json` 到 `skills/ima-skill/harness/workflow_config.json`，填写本机路径；IMA 知识库和文章索引笔记由用户提供名称，AI 查询解析 ID 后写入配置。
-5. 参考 `config/trae-mcp.example.json` 或 `config/workbuddy-mcp.example.json` 配置 Zotero MCP，把 `<repo>` 替换为本仓库的绝对路径。
-6. 运行离线检查：
+把仓库链接或本地目录交给 AI 代理后，让它按下面顺序读取：
+
+1. `README.md`
+2. `AGENTS.md`
+3. `skills/literature-organizer/SKILL.md`
+4. `docs/setup.md`
+5. `docs/configuration.md`
+6. `config/workflow_config.example.json`
+
+然后让 AI 根据 `docs/configuration.md` 向用户收集本地配置，包括临时存放区、本地归档目录、IMA 知识库名称、IMA 文章索引笔记名称、Zotero 凭证和所使用 AI 工具的 MCP 配置入口。
+
+用户只需要提供名称和本地路径；IMA 知识库 ID、IMA 笔记 ID 等映射应由 AI 通过对应接口查询后写入本机私有配置。
+
+## 快速配置
+
+1. 准备环境变量：
+
+```powershell
+Copy-Item config/env.example .env
+```
+
+2. 准备工作流配置：
+
+```powershell
+Copy-Item config/workflow_config.example.json skills/ima-skill/harness/workflow_config.json
+```
+
+3. 将示例配置中的占位符替换为本机配置：
+
+```text
+<intake_dir>
+<recommended_archive_dir>
+<self_collected_archive_dir>
+<literature_root>
+<repo>
+```
+
+4. 根据实际 AI 工具选择配置模板：
+
+```text
+config/trae-mcp.example.json
+config/workbuddy-mcp.example.json
+config/codex-automation.example.toml
+```
+
+5. 运行离线体检：
 
 ```powershell
 node scripts/doctor.cjs
-python integrations/zotero-mcp/scripts/smoke_mcp.py --server zotero --list-tools
 ```
 
-7. 填好 IMA 凭证和 `workflow_config.json` 后，再运行 live 预检：
+6. 配好 Zotero 和 IMA 后，再运行本机环境检查：
 
 ```powershell
+python integrations/zotero-mcp/scripts/smoke_mcp.py --server zotero --list-tools
 node skills/ima-skill/harness/preflight.cjs
 ```
 
 ## 配置到不同 AI 工具
 
-不同 AI 工具的接入方式不同，但都复用同一套主流程、配置模板和 harness：
-
-| 工具 | 文档 | 适用重点 |
+| 工具 | 文档 | 重点 |
 | --- | --- | --- |
-| 总体配置清单 | `docs/configuration.md` | API 凭证、环境变量、本地文件夹路径、AI 工具配置入口 |
-| 通用本地配置 | `docs/setup.md` | 环境变量、`workflow_config.json`、Zotero MCP 基础检查 |
-| Codex | `docs/codex-skill-automation-setup.md` | 安装 Codex-owned skills、固定 runner、自动化任务 |
+| 通用配置 | `docs/configuration.md` | 汇总 API、本地目录、知识库名称、引用库配置 |
+| 本地安装 | `docs/setup.md` | 环境变量、私有配置、离线检查 |
+| Codex | `docs/codex-skill-automation-setup.md` | skills、固定 runner、自动化任务 |
 | TRAE Work | `docs/trae-work-setup.md` | 项目级 skills、Zotero MCP、TRAE 自动化 |
-| WorkBuddy | `docs/workbuddy-setup.md` | 用户级 skills、自定义 MCP、连接器信任、自动化 prompt |
+| WorkBuddy | `docs/workbuddy-setup.md` | 用户级 skills、自定义 MCP、自动化 prompt |
 
-`extra/` 中的内容不是主流程必需配置，而是用户不使用 IMA / Zotero 主方案时的备选接口。例如使用 JabRef、LaTeX / Overleaf / Pandoc 引用库时，可走 `extra/reference-managers/jabref/` 的 BibTeX / JabRef 兼容模式：AI 直接维护 `.bib` 文件和 PDF 路径，不连接 JabRef 桌面端。
+自动化模板统一放在 `automation/` 和 `config/codex-automation.example.toml`。这些文件只作为示例，不会被主流程自动读取。真实 runner、prompt 和本机配置需要复制后再填写私有路径和环境变量。
 
-公开文档只使用 `<repo>`、`<literature_root>`、`<logs_dir>` 等占位符。真实路径、API key、知识库 ID、笔记 ID 只写入本机私有配置。
+## 默认组件与扩展组件
 
-自动化相关模板统一放在 `automation/` 和 `config/codex-automation.example.toml`。这些文件只作为可复制示例，不会被主流程自动读取；真实自动化 runner、prompt 和本机配置需要复制后再填入私有路径与环境变量。
+默认方案：
 
-## harness 说明
+- AI 知识库：IMA
+- 引用库：Zotero
+- 本地归档：推荐文献目录和自行查找文献目录
+- 流程入口：`skills/literature-organizer/SKILL.md`
 
-主流程新增了四个本地硬约束脚本，位于 `skills/literature-organizer/harness/`：
+可选扩展：
 
-- `content_check.cjs`：检查标签数量、摘要长度、乱码和标题改写风险。
-- `dedup_guard.cjs`：在归档前检查本地 SHA256、IMA 记录和 Zotero 状态。
-- `next_archive_no.cjs`：扫描归档目录，计算下一个归档编号，禁止手填编号。
-- `zotero_guard.cjs`：写入 Zotero 前检查 title、tags、extra 字段。
+- AI 知识库：NotebookLM、Notion、Obsidian
+- 引用库：BibTeX / JabRef、EndNote
 
-IMA 侧上传和末尾校验仍由 `skills/ima-skill/harness/` 执行。
+扩展方案都放在 `extra/` 中。它们不是主配置的一部分，也不会影响默认 IMA + Zotero 流程。用户可以把某个扩展目录交给 AI，让 AI 按该目录内的说明单独接入。
 
-## 隐私规则
+## harness 约束
 
-仓库不应包含真实 API key、Zotero 导出备份、IMA 日志、归档 PDF 或本机绝对路径。`.env`、`.workflow-state`、日志、PDF、`skills/ima-skill/harness/workflow_config.json` 都已被忽略。
+主流程包含几类本地检查脚本，用于降低 AI 自动整理文献时的误操作风险：
+
+- `skills/literature-organizer/harness/content_check.cjs`：检查标题、摘要、标签和乱码风险。
+- `skills/literature-organizer/harness/dedup_guard.cjs`：归档前检查本地 SHA256、IMA 记录和 Zotero 状态。
+- `skills/literature-organizer/harness/next_archive_no.cjs`：扫描归档目录并计算下一个编号。
+- `skills/literature-organizer/harness/zotero_guard.cjs`：写入 Zotero 前检查 title、tags、extra 字段。
+- `skills/ima-skill/harness/preflight.cjs`：检查 IMA 侧配置和上传前置条件。
+
+这些 harness 是给 AI 代理执行真实流程前使用的安全边界。修改 skill 时，应同时确认对应 harness 是否需要更新。
+
+## 隐私与公开分享
+
+本仓库按公开分享设计，公开文件只保留模板、占位符和说明。不要在文档、示例、日志或 issue 中写入完整凭证。
+
+公开文档和模板应只使用：
+
+```text
+<repo>
+<literature_root>
+<intake_dir>
+<zotero_user_id>
+<zotero_api_key>
+<ima_kb_name>
+<ima_note_name>
+```
+
+真实 API key、本地绝对路径、IMA 知识库 ID、IMA 笔记 ID、Zotero user ID、日志、PDF、私有 `workflow_config.json` 都应保留在本机环境中。
 
 ## 后续修改 skill
 
-每个 skill 都保留为可直接手改的 Markdown 文件。主流程规则放在 `skills/literature-organizer/SKILL.md`，IMA 细节放在 `skills/ima-skill/SKILL.md`，Zotero 细节放在 `skills/zotero/SKILL.md`。修改后建议运行 `node scripts/doctor.cjs` 和对应 `node --check` 检查。
+每个 skill 都保留为可手动修改的 Markdown 文件：
+
+- 主流程：`skills/literature-organizer/SKILL.md`
+- IMA 组件：`skills/ima-skill/SKILL.md`
+- Zotero 组件：`skills/zotero/SKILL.md`
+- 扩展组件：`extra/**/README.md`
+
+修改后建议运行：
+
+```powershell
+node scripts/doctor.cjs
+node --check scripts/doctor.cjs
+```
+
+如果修改了自动化 runner，还应运行：
+
+```powershell
+node --check automation/runners/run-literature-organizer.example.cjs
+```
