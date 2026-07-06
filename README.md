@@ -180,24 +180,6 @@ node skills/ima-skill/harness/preflight.cjs
 
 这些 harness 是给 AI 代理执行真实流程前使用的安全边界。修改 skill 时，应同时确认对应 harness 是否需要更新。
 
-## 隐私与公开分享
-
-本仓库按公开分享设计，公开文件只保留模板、占位符和说明。不要在文档、示例、日志或 issue 中写入完整凭证。
-
-公开文档和模板应只使用：
-
-```text
-<repo>
-<literature_root>
-<intake_dir>
-<zotero_user_id>
-<zotero_api_key>
-<ima_kb_name>
-<ima_note_name>
-```
-
-真实 API key、本地绝对路径、IMA 知识库 ID、IMA 笔记 ID、Zotero user ID、日志、PDF、私有 `workflow_config.json` 都应保留在本机环境中。
-
 ## 后续修改 skill
 
 每个 skill 都保留为可手动修改的 Markdown 文件：
