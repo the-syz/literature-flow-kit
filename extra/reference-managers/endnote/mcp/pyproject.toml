@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "endnote-write-mcp"
+version = "0.1.0"
+description = "Minimal MCP server for controlled EndNote import/update/delete operations"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.0.0"
+]
+
+[project.scripts]
+endnote-write-mcp = "endnote_write_mcp.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/endnote_write_mcp"]

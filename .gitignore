@@ -27,3 +27,14 @@ out/
 **/logs/
 *.jsonl
 *.baiduyun.uploading.cfg
+
+# Local EndNote test libraries and downloaded upstream projects
+extra/reference-managers/endnote/endnote-cli-main/
+extra/reference-managers/endnote/endnote-cli-main.zip
+extra/reference-managers/endnote/endnote-mcp-main/
+extra/reference-managers/endnote/endnote-mcp-main.zip
+extra/reference-managers/endnote/endnote-mcp-test/
+extra/reference-managers/endnote/external/
+extra/reference-managers/endnote/upstream/
+extra/reference-managers/endnote/test .enl
+extra/reference-managers/endnote/test .Data/
