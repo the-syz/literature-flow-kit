@@ -27,19 +27,21 @@
       "rule": "推荐文献统一进入该知识库。"
     },
     "self_collected": {
-      "rule": "自行查找文献按文章内容路由。",
+      "rule": "自行查找文献可按用户自定义主题路由；如果用户不需要分类，可统一写入默认知识库。不要把“其他”类作为优先路由，只有确实无法匹配任何明确主题时才使用。",
       "routing": {
-        "YOUR_DEFAULT_KB_NAME": "默认领域或主要研究方向文献。",
-        "YOUR_METHOD_KB_NAME": "机器学习、代理模型、优化或其他方法类文献。",
-        "YOUR_MISC_KB_NAME": "其他主题文献。"
+        "YOUR_DEFAULT_KB_NAME": "不分类或无法可靠判断分类时使用的默认知识库。",
+        "YOUR_TOPIC_KB_NAME_1": "用户自定义主题一；用清晰、正向的主题定义描述收录范围。",
+        "YOUR_TOPIC_KB_NAME_2": "用户自定义主题二；仅在文章内容明确匹配时写入。",
+        "YOUR_FALLBACK_KB_NAME": "可选兜底知识库；不要优先使用，只有没有任何明确主题匹配时才写入。"
       }
     }
   },
   "knowledge_base_mapping": {
     "YOUR_DEFAULT_KB_NAME": "REPLACE_WITH_KB_ID",
     "YOUR_RECOMMENDED_KB_NAME": "REPLACE_WITH_KB_ID",
-    "YOUR_METHOD_KB_NAME": "REPLACE_WITH_KB_ID",
-    "YOUR_MISC_KB_NAME": "REPLACE_WITH_KB_ID"
+    "YOUR_TOPIC_KB_NAME_1": "REPLACE_WITH_KB_ID",
+    "YOUR_TOPIC_KB_NAME_2": "REPLACE_WITH_KB_ID",
+    "YOUR_FALLBACK_KB_NAME": "REPLACE_WITH_KB_ID"
   },
   "upload_constraints": {
     "max_file_size_mb": 200,
